@@ -50,6 +50,7 @@ export const resetMap = (
 };
 
 export const calculateRoute = (
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   routePoints: google.maps.LatLngLiteral[],
   description: string,
   pictures: string[],
@@ -57,7 +58,8 @@ export const calculateRoute = (
     React.SetStateAction<google.maps.DirectionsResult | null>
   >,
   setDisableMapClick: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsAddRoute: React.Dispatch<React.SetStateAction<boolean>>
+  setIsAddRoute: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsHomePage: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if (routePoints.length < 2) {
     Swal.fire({
@@ -68,7 +70,7 @@ export const calculateRoute = (
     });
     return;
   }
-
+  setLoading(true)
   const directionsService = new google.maps.DirectionsService();
   const request: google.maps.DirectionsRequest = {
     origin: routePoints[0],
@@ -106,9 +108,18 @@ export const calculateRoute = (
         gallery: pictures,
       });
 
+      Swal.fire({
+        icon: 'success',
+        title: 'הצלחה',
+        text: 'מסלול נוסף בהצלחה!',
+        confirmButtonText: 'הבנתי'
+      });
+
+      setLoading(false)
       setDirections(result);
       setDisableMapClick(true);
       setIsAddRoute(false);
+      setIsHomePage(true);
     } else {
       Swal.fire({
         icon: 'error',
